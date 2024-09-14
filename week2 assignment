@@ -1,0 +1,96 @@
+// Encapsulation: Superclass
+class BankAccount {
+  // Private variables using '_'
+  String _accountNumber;
+  double _balance;
+
+  // Constructor
+  BankAccount(this._accountNumber, this._balance);
+
+  // Getter for the private variable _balance
+  double get balance => _balance;
+
+  // Getter for the account number
+  String get accountNumber => _accountNumber;
+
+  // Setter method to deposit amount into the balance
+  void deposit(double amount) {
+    if (amount > 0) {
+      _balance += amount;
+      print('Deposited \$${amount.toStringAsFixed(2)}. New balance: \$${_balance.toStringAsFixed(2)}');
+    } else {
+      print('Invalid amount, cannot deposit');
+    }
+  }
+
+  // Private method for deducting fees
+  void _deductFees(double fee) {
+    _balance -= fee;
+    print('Deducted fees of \$${fee.toStringAsFixed(2)}. Remaining balance: \$${_balance.toStringAsFixed(2)}');
+  }
+
+  // Public method to apply fees
+  void applyFees(double fee) {
+    _deductFees(fee);
+  }
+}
+
+// Abstraction: Abstract class
+abstract class LoanAccount {
+  // Abstract method
+  double calculateInterest();
+}
+
+// Inheritance and Polymorphism: SavingsAccount subclass inheriting from BankAccount
+class SavingsAccount extends BankAccount {
+  double interestRate;
+
+  // Constructor
+  SavingsAccount(String accountNumber, double balance, this.interestRate) 
+    : super(accountNumber, balance);
+
+  // Overriding the deposit method
+  @override
+  void deposit(double amount) {
+    super.deposit(amount); // Reuse functionality from the parent class
+    print('Interest will be calculated with rate: $interestRate%');
+  }
+
+  // Implementing the calculateInterest method for savings account
+  double calculateInterest() {
+    return balance * (interestRate / 100);
+  }
+}
+
+// Inheritance and Polymorphism: CurrentAccount subclass inheriting from BankAccount
+class CurrentAccount extends BankAccount {
+  double transactionFee;
+
+  // Constructor
+  CurrentAccount(String accountNumber, double balance, this.transactionFee) 
+    : super(accountNumber, balance);
+
+  // Overriding the applyFees method to add transaction fee
+  @override
+  void applyFees(double fee) {
+    print('Applying transaction fee of \$${transactionFee.toStringAsFixed(2)}');
+    super.applyFees(fee + transactionFee);
+  }
+}
+
+void main() {
+  // Creating a Savings Account (Encapsulation)
+  SavingsAccount savings = SavingsAccount('S12345', 1000.0, 3.5);
+  print('Savings Account Balance: \$${savings.balance}');
+  savings.deposit(500); // Deposit with additional print
+  print('Interest on Savings: \$${savings.calculateInterest()}');
+  
+  // Creating a Current Account (Encapsulation and Inheritance)
+  CurrentAccount current = CurrentAccount('C98765', 2000.0, 15.0);
+  print('\nCurrent Account Balance: \$${current.balance}');
+  current.applyFees(20); // Apply transaction fee
+  
+  // Checking inheritance and encapsulation
+  print('\nSavings Account Number: ${savings.accountNumber}');
+  print('Current Account Number: ${current.accountNumber}');
+}
